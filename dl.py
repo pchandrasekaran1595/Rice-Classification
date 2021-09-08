@@ -12,6 +12,7 @@ from torch.utils.data import DataLoader as DL
 from torch.nn.utils import weight_norm as WN
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 import utils as u
 
@@ -314,7 +315,7 @@ def dl_analysis(features=None, targets=None):
 
         dataloaders = {
             "train" : DL(tr_data_setup, batch_size=batch_size, shuffle=True, generator=torch.manual_seed(u.SEED)),
-            "valid" : DL(va_data_setup, batch_size=batch_size, shuffle=True)
+            "valid" : DL(va_data_setup, batch_size=batch_size, shuffle=False)
         }
 
         torch.manual_seed(u.SEED)
@@ -327,6 +328,17 @@ def dl_analysis(features=None, targets=None):
                          early_stopping_patience=early_stopping,
                          dataloaders=dataloaders, verbose=True)
         save_graphs(L, A)
+
+        y_pred = predict_batch(model=model, dataloader=dataloaders["valid"], mode="valid")
+
+        accuracy = accuracy_score(y_pred, va_trgts)
+        precision, recall, f_score, _ = precision_recall_fscore_support(y_pred, va_trgts)
+
+        u.myprint("Accuracy  : {:.5f}".format(accuracy), "green")
+        u.myprint("Precision : {:.5f}, {:.5f}".format(precision[0], precision[1]), "green")
+        u.myprint("Recall    : {:.5f}, {:.5f}".format(recall[0], recall[1]), "green")
+        u.myprint("F1 Score  : {:.5f}, {:.5f}".format(f_score[0], f_score[1]), "green")
+        u.breaker()
     else:
         raise NotImplementedError("Test Mode is not Implemented")
 
