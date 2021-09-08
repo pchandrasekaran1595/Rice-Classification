@@ -11,9 +11,16 @@ def myprint(text: str, color: str) -> None:
 def breaker(num=50, char="*") -> None:
     myprint("\n" + num*char + "\n", "magenta")
 
+
+def debug(text: str):
+    myprint(text, "red")
+
 #####################################################################################################
 
 SEED = 0
 DATA_PATH = "./Data"
+MODEL_PATH = "./Models"
+if not os.path.exists(MODEL_PATH):
+    os.makedirs(MODEL_PATH)
 
 #####################################################################################################
